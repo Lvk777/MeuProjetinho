@@ -201,7 +201,7 @@
                 <div class="bio_contain">
                     <h1 class="vitor_vieira">Vitor Vieira</h1>
                     <h2 class="designer font_w_font_s1 overflow-hidden"></h2>
-                    <button class="download_cv hire_me font_w_font_s">
+                    <button class="download_cv hire_me font_w_font_s" type="button">
                         <i class="ri-at-line"></i> Hire Me
                     </button>
                 </div>
@@ -788,38 +788,36 @@
                         <h2 class="intro fade_up">contact us</h2>
                     </div>
                     <h2 class="vieira fade_up">Let's Work Together!</h2>
-                    <div class="container1">
+                    <form class="container1" id="contactForm" data-emailjs-service="service_portfolio" data-emailjs-template="template_contact" novalidate>
                         <div class="form form__1">
                             <label for="name" class="form__label">What's Your Name*</label>
-                            <input type="text" class="form__input" placeholder="" id="name" required autocomplete="off">
+                            <input type="text" class="form__input" placeholder="" id="name" name="name" required autocomplete="name">
                         </div>
                         <div class="form form__2">
                             <label for="email" class="form__label">Your Email*</label>
-                            <input type="email" class="form__input" placeholder="" id="email" required
-                                autocomplete="off">
+                            <input type="email" class="form__input" placeholder="" id="email" name="email" required autocomplete="email">
                         </div>
                         <div class="form form__1">
-                            <label for="name" class="form__label">Your Phone Number*</label>
-                            <input type="text" class="form__input" placeholder="" id="phone" required
-                                autocomplete="off">
+                            <label for="phone" class="form__label">Your Phone Number*</label>
+                            <input type="tel" class="form__input" placeholder="" id="phone" name="phone" required inputmode="tel" pattern="^\+?[0-9\s\-]{10,15}$" title="Use DDD e apenas números (10 a 15 dígitos)" autocomplete="tel">
                         </div>
                         <div class="form form__1">
-                            <label for="name" class="form__label">Subject*</label>
-                            <input type="text" class="form__input" placeholder="" id="subject" required
-                                autocomplete="off">
+                            <label for="subject" class="form__label">Subject*</label>
+                            <input type="text" class="form__input" placeholder="" id="subject" name="subject" required autocomplete="off">
                         </div>
-                    </div>
-                    <div class="btn_message">
-                        <div class="form form__3">
-                            <label for="name" class="form__label">Tell us about your project*</label>
-                            <input type="text" class="form__input message2" placeholder="" id="project" required>
+                        <div class="btn_message">
+                            <div class="form form__3">
+                                <label for="project" class="form__label">Tell us about your project*</label>
+                                <textarea class="form__input message2" placeholder="" id="project" name="project" rows="4" required autocomplete="off"></textarea>
+                            </div>
+                            <div class="send_message_form">
+                                <button type="submit" class="download_cv form__btn" id="contactSubmit">
+                                    <i class="fa-regular fa-paper-plane material-icons"></i>Send Message
+                                </button>
+                            </div>
                         </div>
-                        <div class="send_message_form">
-                            <button class="download_cv form__btn">
-                                <i class="fa-regular fa-paper-plane material-icons"></i>Send Message
-                            </button>
-                        </div>
-                    </div>
+                        <p class="form_status" id="contactStatus" aria-live="polite"></p>
+                    </form>
                     <div>
                         <h3 class="vieira touch">Get in touch!</h3>
                         <div class="contact_number_main">
@@ -833,7 +831,7 @@
                         <div class="contact_number_main">
                             <img src="assets/images/map.svg" alt="map">
                             <h4 class="contact_number">
-                                <a href="javascript:void;">Cotia SP</a>
+                                <a href="javascript:void(0);">Cotia SP</a>
                             </h4>
                         </div>
                     </div>
@@ -849,9 +847,9 @@
         <!-- ======================================= Social Media Right Side  ================================== -->
         <div class="social_media_main" id="social_media_main">
             <ul class="social_media">
-                <li><a href="https://twitter.com" target="blank">TW</a></li>
-                <li><a href="https://www.instagram.com" target="blank">IG</a></li>
-                <li><a href="https://www.linkedin.com" target="blank">IN</a></li>
+                <li><a href="https://twitter.com" target="_blank" rel="noopener">TW</a></li>
+                <li><a href="https://www.instagram.com" target="_blank" rel="noopener">IG</a></li>
+                <li><a href="https://www.linkedin.com" target="_blank" rel="noopener">IN</a></li>
             </ul>
         </div>
         <!-- ======================================= Social Media Right Side End ================================== -->
@@ -1067,6 +1065,7 @@
     <script src="assets/javascript/slick.min.js"></script>
     <script src="assets/javascript/hexagon_animation/particles.min.js"></script>
     <script src="assets/javascript/spider_animation/spider_animation.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script src="assets/javascript/script.js"></script>
 </body>
 
