@@ -1883,14 +1883,44 @@ button:hover .shopping_bag {
     font-style: normal;
     font-weight: 500;
     line-height: 24px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .form__input:focus {
     outline: none;
-    border-bottom: 2px solid var(--one-background);
 }
 
 .form__input:focus:invalid {
+    border-bottom: 2px solid #ff4d6d;
+}
+
+.form__input.is-focus {
+    border-bottom: 2px solid #55E6A5;
+    box-shadow: 0 12px 24px -18px rgba(85, 230, 165, 0.8);
+}
+
+.form__input.is-valid {
+    border-bottom: 2px solid #55E6A5;
+}
+
+.form__input.is-invalid {
+    border-bottom: 2px solid #ff4d6d !important;
+    box-shadow: 0 12px 24px -18px rgba(255, 77, 109, 0.8);
+}
+
+.form.has-error label {
+    color: #ff4d6d !important;
+}
+
+.form.has-success label {
+    color: #55E6A5;
+}
+
+.form.has-error .form__input {
+    border-bottom: 2px solid #ff4d6d !important;
+}
+
+.form.has-success .form__input {
     border-bottom: 2px solid #55E6A5;
 }
 

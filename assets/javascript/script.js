@@ -201,22 +201,6 @@ $(function () {
 });
 // blog_pop_up_slider end
 
-// form focus styling
-$(function () {
-    const inputs = $('input, textarea');
-    inputs.on('focus', function () {
-        $(this).parent().addClass('active');
-    });
-    inputs.on('blur', function () {
-        if ($(this).val()) {
-            $(this).parent().addClass('active');
-        } else {
-            $(this).parent().removeClass('active');
-        }
-    });
-});
-// form focus styling end
-
 // side Nav 
 function openNav() {
     var side = document.getElementById("mySidenav");
@@ -357,56 +341,112 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const statusNode = document.getElementById('contactStatus');
         const submitBtn = document.getElementById('contactSubmit');
+        const fieldElements = Array.from(contactForm.querySelectorAll('.form__input'));
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        const validators = {
+            name: (value) => value.length >= 2,
+            email: (value) => emailRegex.test(value),
+            phone: (value) => {
+                const digits = value.replace(/\D/g, '');
+                return digits.length >= 10 && digits.length <= 15;
+            },
+            subject: (value) => value.length >= 3,
+            message: (value) => value.length >= 5,
+        };
+
+        const normalize = (value) => value.trim();
+
+        function setFieldState(element, state) {
+            if (!element) return;
+            const wrapper = element.closest('.form');
+            if (state === 'valid') {
+                element.classList.remove('is-invalid');
+                element.classList.add('is-valid');
+                wrapper?.classList.remove('has-error');
+                wrapper?.classList.add('has-success');
+            } else if (state === 'invalid') {
+                element.classList.remove('is-valid');
+                element.classList.add('is-invalid');
+                wrapper?.classList.remove('has-success');
+                wrapper?.classList.add('has-error');
+            } else {
+                element.classList.remove('is-valid', 'is-invalid', 'is-focus');
+                wrapper?.classList.remove('has-error', 'has-success');
+            }
+        }
+
+        function validateField(element) {
+            if (!element) return true;
+            const key = element.getAttribute('name') || '';
+            const value = normalize(element.value);
+            const validator = validators[key] || ((val) => val.length > 0);
+            const isValid = value.length > 0 && validator(value);
+            setFieldState(element, isValid ? 'valid' : 'invalid');
+            return isValid;
+        }
+
+        fieldElements.forEach((element) => {
+            const wrapper = element.closest('.form');
+            setFieldState(element, 'neutral');
+            if (normalize(element.value)) {
+                wrapper?.classList.add('active');
+            }
+
+            element.addEventListener('focus', () => {
+                wrapper?.classList.add('active');
+                element.classList.add('is-focus');
+            });
+
+            element.addEventListener('blur', () => {
+                element.classList.remove('is-focus');
+                if (!normalize(element.value)) {
+                    wrapper?.classList.remove('active');
+                }
+                validateField(element);
+            });
+
+            element.addEventListener('input', () => {
+                validateField(element);
+            });
+        });
 
         contactForm.addEventListener('submit', async function (event) {
             event.preventDefault();
 
             if (!window.emailjs) {
                 if (statusNode) {
-                    statusNode.textContent = 'Não foi possível carregar o EmailJS no momento.';
+                    statusNode.textContent = 'Nao foi possivel carregar o EmailJS no momento.';
                 }
                 return;
             }
-
-            const serviceId = contactForm.dataset.emailjsService || 'service_portfolio';
-            const templateId = contactForm.dataset.emailjsTemplate || 'template_contact';
 
             if (statusNode) {
                 statusNode.textContent = '';
             }
 
-            const templateParams = {
-                from_name: (document.getElementById('name')?.value || '').trim(),
-                reply_to: (document.getElementById('email')?.value || '').trim(),
-                phone: (document.getElementById('phone')?.value || '').trim(),
-                subject: (document.getElementById('subject')?.value || '').trim(),
-                project: (document.getElementById('project')?.value || '').trim(),
-            };
+            const serviceId = contactForm.dataset.emailjsService || 'service_lx89np9';
+            const templateId = contactForm.dataset.emailjsTemplate || 'template_3qpxu87';
 
-            const missingField = Object.entries(templateParams).find(([, value]) => value.length === 0);
-            if (missingField) {
-                if (statusNode) {
-                    statusNode.textContent = 'Preencha todos os campos obrigatorios antes de enviar.';
-                }
-                return;
-            }
+            const formData = {};
+            let firstInvalid = null;
 
-            const numericPhone = templateParams.phone.replace(/\D/g, '');
-            if (numericPhone.length < 10 || numericPhone.length > 15) {
-                if (statusNode) {
-                    statusNode.textContent = 'Informe um telefone valido com DDD (apenas numeros).';
+            fieldElements.forEach((element) => {
+                const key = element.getAttribute('name');
+                const value = normalize(element.value);
+                const isValid = validateField(element);
+                if (!isValid && !firstInvalid) {
+                    firstInvalid = element;
                 }
-                document.getElementById('phone')?.focus();
-                return;
-            }
+                formData[key] = value;
+            });
 
-            if (!emailRegex.test(templateParams.reply_to)) {
+            if (firstInvalid) {
                 if (statusNode) {
-                    statusNode.textContent = 'Informe um e-mail valido para contato.';
+                    statusNode.textContent = 'Preencha ou corrija os campos destacados em vermelho.';
                 }
-                document.getElementById('email')?.focus();
+                firstInvalid.focus();
                 return;
             }
 
@@ -418,10 +458,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     submitBtn.disabled = true;
                 }
 
-                await emailjs.send(serviceId, templateId, templateParams);
+                await emailjs.send(serviceId, templateId, formData);
 
                 contactForm.reset();
-                contactForm.querySelectorAll('.form').forEach((wrapper) => wrapper.classList.remove('active'));
+                fieldElements.forEach((element) => {
+                    element.classList.remove('is-focus');
+                    setFieldState(element, 'neutral');
+                    const wrapper = element.closest('.form');
+                    wrapper?.classList.remove('active');
+                });
 
                 if (statusNode) {
                     statusNode.textContent = 'Mensagem enviada com sucesso!';
