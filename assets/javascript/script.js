@@ -388,7 +388,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const missingField = Object.entries(templateParams).find(([, value]) => value.length === 0);
             if (missingField) {
                 if (statusNode) {
-                    statusNode.textContent = 'Preencha todos os campos obrigatórios antes de enviar.';
+                    statusNode.textContent = 'Preencha todos os campos obrigatorios antes de enviar.';
                 }
                 return;
             }
@@ -396,7 +396,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const numericPhone = templateParams.phone.replace(/\D/g, '');
             if (numericPhone.length < 10 || numericPhone.length > 15) {
                 if (statusNode) {
-                    statusNode.textContent = 'Informe um telefone válido com DDD (apenas números).';
+                    statusNode.textContent = 'Informe um telefone valido com DDD (apenas numeros).';
                 }
                 document.getElementById('phone')?.focus();
                 return;
@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (!emailRegex.test(templateParams.reply_to)) {
                 if (statusNode) {
-                    statusNode.textContent = 'Informe um e-mail válido para contato.';
+                    statusNode.textContent = 'Informe um e-mail valido para contato.';
                 }
                 document.getElementById('email')?.focus();
                 return;
@@ -428,7 +428,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             } catch (error) {
                 if (statusNode) {
-                    statusNode.textContent = 'Não foi possível enviar a mensagem. Tente novamente.';
+                    const details = error?.text || error?.message || `status ${error?.status ?? 'desconhecido'}`;
+                    statusNode.textContent = `Nao foi possivel enviar a mensagem. Verifique as configuracoes do EmailJS e tente novamente. (Detalhes: ${details})`;
                 }
                 console.error('EmailJS error:', error);
             } finally {
