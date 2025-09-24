@@ -2,7 +2,7 @@
 $(document).ready(function () {
     setTimeout(function () {
         $('.wrapper').addClass('loaded');
-    }, 1000);
+    }, 2500);
 });
 
 // designer text rotation
@@ -345,7 +345,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const honeyField = contactForm.querySelector('#website_field');
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const SUCCESS_MESSAGE = 'Recebi sua mensagem, respondo em ate 24 horas. Se precisar de algo urgente, me chame pelo WhatsApp (11 98765-4321) ou LinkedIn.';
 
 
         function setStatus(message, type) {
@@ -380,8 +379,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const tick = () => {
                 const remaining = Math.max(0, cooldownEndsAt - Date.now());
                 if (remaining > 0) {
-                    const seconds = Math.ceil(remaining / 1000);
-                    setStatus(`${SUCCESS_MESSAGE} Aguarde ${seconds}s para um novo envio.`, 'success');
+                    setStatus('Mensagem enviada com sucesso!', 'success');
                 } else {
                     clearCooldown();
                     submitBtn.disabled = false;
@@ -390,7 +388,7 @@ document.addEventListener('DOMContentLoaded', function () {
             };
 
             tick();
-            cooldownTimer = setInterval(tick, 1000);
+            cooldownTimer = setInterval(tick, 2500);
         }
 
         const validators = {
