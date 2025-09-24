@@ -2,7 +2,7 @@
 $(document).ready(function () {
     setTimeout(function () {
         $('.wrapper').addClass('loaded');
-    }, 2500);
+    }, 1000);
 });
 
 // designer text rotation
@@ -342,8 +342,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const statusNode = document.getElementById('contactStatus');
         const submitBtn = document.getElementById('contactSubmit');
         const fieldElements = Array.from(contactForm.querySelectorAll('.form__input'));
+        const honeyField = contactForm.querySelector('#website_field');
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const SUCCESS_MESSAGE = 'Recebi sua mensagem, respondo em ate 24 horas. Se precisar de algo urgente, me chame pelo WhatsApp (11 98765-4321) ou LinkedIn.';
+
 
         function setStatus(message, type) {
             if (!statusNode) return;
@@ -378,7 +381,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const remaining = Math.max(0, cooldownEndsAt - Date.now());
                 if (remaining > 0) {
                     const seconds = Math.ceil(remaining / 1000);
-                    setStatus(`Mensagem enviada com sucesso! Aguarde ${seconds}s para um novo envio.`, 'success');
+                    setStatus(`${SUCCESS_MESSAGE} Aguarde ${seconds}s para um novo envio.`, 'success');
                 } else {
                     clearCooldown();
                     submitBtn.disabled = false;
@@ -468,6 +471,12 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             setStatus('', null);
+
+            if (honeyField && normalize(honeyField.value)) {
+                setStatus('Detectamos um envio suspeito. Atualize a pagina e tente novamente.', 'error');
+                honeyField.value = '';
+                return;
+            }
 
             if (!window.emailjs) {
                 if (statusNode) {
