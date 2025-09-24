@@ -1924,6 +1924,25 @@ button:hover .shopping_bag {
     border-bottom: 2px solid #55E6A5;
 }
 
+.form_status {
+    margin-top: 18px;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.form_status.success {
+    color: #55E6A5;
+    text-shadow: 0 0 18px rgba(85, 230, 165, 0.6);
+}
+
+.form_status.error {
+    color: #ff4d6d;
+    text-shadow: 0 0 18px rgba(255, 77, 109, 0.4);
+}
+
+
 .form__label {
     color: #c1c1c1;
     position: absolute;
@@ -1957,6 +1976,20 @@ button:hover .shopping_bag {
     background-color: transparent;
     border: 2px solid #55E6A5;
     border-radius: 0px;
+}
+
+.form__btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    background-color: #55E6A5;
+    border: 2px solid transparent;
+    box-shadow: none;
+}
+
+.form__btn:disabled:hover {
+    background-color: #55E6A5;
+    border: 2px solid transparent;
+    border-radius: 20px;
 }
 
 .form__3 {

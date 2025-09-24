@@ -345,6 +345,51 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+        function setStatus(message, type) {
+            if (!statusNode) return;
+            statusNode.textContent = message || '';
+            statusNode.classList.remove('success', 'error');
+            if (type) {
+                statusNode.classList.add(type);
+            }
+        }
+
+        const SUBMIT_COOLDOWN_MS = 30000;
+        let cooldownEndsAt = 0;
+        let cooldownTimer = null;
+
+        const isCooldownActive = () => cooldownEndsAt && Date.now() < cooldownEndsAt;
+
+        function clearCooldown() {
+            if (cooldownTimer) {
+                clearInterval(cooldownTimer);
+                cooldownTimer = null;
+            }
+            cooldownEndsAt = 0;
+        }
+
+        function beginCooldown(durationMs = SUBMIT_COOLDOWN_MS) {
+            if (!submitBtn) return;
+            clearCooldown();
+            cooldownEndsAt = Date.now() + durationMs;
+            submitBtn.disabled = true;
+
+            const tick = () => {
+                const remaining = Math.max(0, cooldownEndsAt - Date.now());
+                if (remaining > 0) {
+                    const seconds = Math.ceil(remaining / 1000);
+                    setStatus(`Mensagem enviada com sucesso! Aguarde ${seconds}s para um novo envio.`, 'success');
+                } else {
+                    clearCooldown();
+                    submitBtn.disabled = false;
+                    setStatus('', null);
+                }
+            };
+
+            tick();
+            cooldownTimer = setInterval(tick, 1000);
+        }
+
         const validators = {
             name: (value) => value.length >= 2,
             email: (value) => emailRegex.test(value),
@@ -415,15 +460,20 @@ document.addEventListener('DOMContentLoaded', function () {
         contactForm.addEventListener('submit', async function (event) {
             event.preventDefault();
 
-            if (!window.emailjs) {
-                if (statusNode) {
-                    statusNode.textContent = 'Nao foi possivel carregar o EmailJS no momento.';
-                }
+            if (isCooldownActive()) {
+                const remaining = Math.max(0, cooldownEndsAt - Date.now());
+                const seconds = Math.ceil(remaining / 1000);
+                setStatus(`Aguarde ${seconds}s antes de enviar outra mensagem.`, 'error');
                 return;
             }
 
-            if (statusNode) {
-                statusNode.textContent = '';
+            setStatus('', null);
+
+            if (!window.emailjs) {
+                if (statusNode) {
+                    setStatus('Nao foi possivel carregar o EmailJS no momento.', 'error');
+                }
+                return;
             }
 
             const serviceId = contactForm.dataset.emailjsService || 'service_xg2n148';
@@ -444,7 +494,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (firstInvalid) {
                 if (statusNode) {
-                    statusNode.textContent = 'Preencha ou corrija os campos destacados em vermelho.';
+                    setStatus('Preencha ou corrija os campos destacados em vermelho.', 'error');
                 }
                 firstInvalid.focus();
                 return;
@@ -452,7 +502,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             try {
                 if (statusNode) {
-                    statusNode.textContent = 'Enviando mensagem...';
+                    setStatus('Enviando mensagem...', null);
                 }
                 if (submitBtn) {
                     submitBtn.disabled = true;
@@ -468,17 +518,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     wrapper?.classList.remove('active');
                 });
 
-                if (statusNode) {
-                    statusNode.textContent = 'Mensagem enviada com sucesso!';
-                }
+                beginCooldown();
             } catch (error) {
                 if (statusNode) {
                     const details = error?.text || error?.message || `status ${error?.status ?? 'desconhecido'}`;
-                    statusNode.textContent = `Nao foi possivel enviar a mensagem. Verifique as configuracoes do EmailJS e tente novamente. (Detalhes: ${details})`;
+                    setStatus(`Nao foi possivel enviar a mensagem. Verifique as configuracoes do EmailJS e tente novamente. (Detalhes: ${details})`, 'error');
                 }
                 console.error('EmailJS error:', error);
             } finally {
-                if (submitBtn) {
+                if (submitBtn && !isCooldownActive()) {
                     submitBtn.disabled = false;
                 }
             }
