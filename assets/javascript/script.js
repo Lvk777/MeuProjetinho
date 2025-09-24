@@ -426,7 +426,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 statusNode.textContent = '';
             }
 
-            const serviceId = contactForm.dataset.emailjsService || 'service_lx89np9';
+            const serviceId = contactForm.dataset.emailjsService || 'service_xg2n148';
             const templateId = contactForm.dataset.emailjsTemplate || 'template_3qpxu87';
 
             const formData = {};
